@@ -1,0 +1,84 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Base class: BankAccount
+class BankAccount {
+protected:
+    string owner;
+    double balance;
+
+public:
+    // Constructor
+    BankAccount(const string& accountOwner, double initialBalance) 
+        : owner(accountOwner), balance(initialBalance) {}
+
+    // Deposit method
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Deposited $" << amount << " to " << owner << "'s account.\n";
+        } else {
+            cout << "Invalid deposit amount.\n";
+        }
+    }
+
+    // Withdraw method (virtual for polymorphism)
+    virtual void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            cout << "Withdrew $" << amount << " from " << owner << "'s account.\n";
+        } else {
+            cout << "Invalid withdraw amount or insufficient balance.\n";
+        }
+    }
+
+    // Display account details
+    virtual void displayAccountDetails() const {
+        cout << "Owner: " << owner << ", Balance: $" << balance << endl;
+    }
+};
+
+// Derived class: SavingsAccount
+class SavingsAccount : public BankAccount {
+private:
+    double interestRate; // Annual interest rate in percentage
+
+public:
+    // Constructor
+    SavingsAccount(const string& accountOwner, double initialBalance, double rate)
+        : BankAccount(accountOwner, initialBalance), interestRate(rate) {}
+
+    // Apply interest to the balance
+    void applyInterest() {
+        double interest = balance * (interestRate / 100);
+        balance += interest;
+        cout << "Applied $" << interest << " interest to " << owner << "'s account.\n";
+    }
+
+    // Override displayAccountDetails
+    void displayAccountDetails() const override {
+        BankAccount::displayAccountDetails();
+        cout << "Interest Rate: " << interestRate << "%\n";
+    }
+};
+
+// Main function
+int main() {
+    // Create a BankAccount object
+    BankAccount johnAccount("John Doe", 500.0);
+    johnAccount.deposit(200.0);
+    johnAccount.withdraw(150.0);
+    johnAccount.displayAccountDetails();
+
+    cout << "---------------------\n";
+
+    // Create a SavingsAccount object
+    SavingsAccount janeAccount("Jane Doe", 1000.0, 5.0); // 5% interest rate
+    janeAccount.deposit(500.0);
+    janeAccount.withdraw(300.0);
+    janeAccount.applyInterest();
+    janeAccount.displayAccountDetails();
+
+    return 0;
+}
